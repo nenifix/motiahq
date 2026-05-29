@@ -1,0 +1,32 @@
+# docker-compose.yml — motiahq (optional sandboxed deployment)
+# Developed by nenifix.com
+
+version: '3.8'
+
+services:
+  motiahq:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${MOTIAHQ_PORT:-8770}:8770"
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-qwen/qwen2.5-coder-7b-instruct}
+      - HERMES_API_ENDPOINT=${HERMES_API_ENDPOINT:-https://openrouter.ai/api/v1}
+      - HERMES_MODEL=${HERMES_MODEL:-qwen/qwen2.5-coder-32b-instruct}
+      - HERMES_BUDGET_LIMIT=${HERMES_BUDGET_LIMIT:-20.00}
+      - MOTIA_BUDGET=${MOTIA_BUDGET:-5.00}
+      - MOTIAHENE_BUDGET=${MOTIAHENE_BUDGET:-10.00}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - SIYUAN_API_URL=${SIYUAN_API_URL:-http://localhost:6806/api}
+      - SIYUAN_API_TOKEN=${SIYUAN_API_TOKEN}
+      - MOTIAHQ_PORT=8770
+      - MOTIAHQ_API_TOKEN=${MOTIAHQ_API_TOKEN}
+    volumes:
+      - motiahq-data:/root/.motiahq
+    restart: unless-stopped
+
+volumes:
+  motiahq-data:

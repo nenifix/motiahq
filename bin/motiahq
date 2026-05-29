@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+# bin/motiahq — Launcher script
+# Developed by nenifix.com
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Load env
+if [ -f "$HOME/.motiahq/.env" ]; then
+  set -a
+  source "$HOME/.motiahq/.env"
+  set +a
+fi
+
+export MOTIAHQ_PORT="${MOTIAHQ_PORT:-8770}"
+
+# Check for motia/motiahene workers
+check_worker() {
+  if command -v "$1" &>/dev/null; then
+    echo -e "\033[0;32m  ✓\033[0m $1 found"
+  else
+    echo -e "\033[0;33m  ✗\033[0m $1 not found (install for full orchestration)"
+  fi
+}
+
+case "${1:-serve}" in
+  serve)
+    echo ""
+    echo "  ╔══════════════════════════════════════════════╗"
+    echo "  ║  ⚒  motiahq — Agent Orchestration HQ       ║"
+    echo "  ║  Developed by nenifix.com                   ║"
+    echo "  ╚══════════════════════════════════════════════╝"
+    echo ""
+    echo "  Checking workers:"
+    check_worker motia
+    check_worker motiahene
+    echo ""
+    echo "  Starting server on port $MOTIAHQ_PORT..."
+    echo ""
+    cd "$PROJECT_DIR"
+    exec node src/server/index.js serve
+    ;;
+  --version)
+    echo "motiahq v1.0.0 • Developed by nenifix.com"
+    ;;
+  --uninstall)
+    bash "$HOME/Desktop/motiahq/uninstall.sh"
+    ;;
+  --help)
+    echo "motiahq — Agent Orchestration HQ"
+    echo "Developed by nenifix.com"
+    echo ""
+    echo "Usage: motiahq <command>"
+    echo ""
+    echo "Commands:"
+    echo "  serve                  Start server + dashboard (default)"
+    echo "  task create <goal>     Submit a task"
+    echo "  task list              List tasks"
+    echo "  task status <id>       Task status"
+    echo "  task cancel <id>       Cancel task"
+    echo "  agent list             List agents"
+    echo "  agent logs <name>      Agent logs"
+    echo "  budget show            Show budgets"
+    echo "  budget reset           Reset budgets"
+    echo "  hermes review <id>     Hermes review"
+    echo "  --version              Version"
+    echo "  --help                 This help"
+    ;;
+  *)
+    cd "$PROJECT_DIR"
+    exec node src/server/index.js "$@"
+    ;;
+esac
