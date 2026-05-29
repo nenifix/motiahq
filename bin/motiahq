@@ -5,7 +5,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+PROJECT_DIR="$HOME/Desktop/motiahq"
+LIB_DIR="$HOME/.local/lib/motiahq"
+export NODE_PATH="${NODE_PATH:+$NODE_PATH:}$LIB_DIR/node_modules"
 
 # Load env
 if [ -f "$HOME/.motiahq/.env" ]; then
@@ -39,7 +41,7 @@ case "${1:-serve}" in
     echo ""
     echo "  Starting server on port $MOTIAHQ_PORT..."
     echo ""
-    cd "$PROJECT_DIR"
+    cd "$LIB_DIR"
     exec node src/server/index.js serve
     ;;
   --version)
@@ -69,7 +71,7 @@ case "${1:-serve}" in
     echo "  --help                 This help"
     ;;
   *)
-    cd "$PROJECT_DIR"
+    cd "$LIB_DIR"
     exec node src/server/index.js "$@"
     ;;
 esac
